@@ -40,6 +40,7 @@ router.post('/', function(req, res, next) {
   });
 });
 
+
 router.delete('/', function(req, res, next) {
 
   User.findByIdAndRemove(req.query.id).exec(function(err, removedUser) {
