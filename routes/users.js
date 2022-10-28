@@ -6,7 +6,7 @@ const router = express.Router();
 
 export default router;
 
-router.get("/", authenticate, function (req, res, next) {
+router.get("/", function (req, res, next) {
     User.find().sort('name').exec(function(err, users) {
       if (err) {
         return next(err);
