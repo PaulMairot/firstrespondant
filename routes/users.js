@@ -7,13 +7,12 @@ const router = express.Router();
 export default router;
 
 router.get("/", function (req, res, next) {
-  res.send("Ignition!2");
-    /* User.find().sort('name').exec(function(err, users) {
+    User.find().sort('name').exec(function(err, users) {
       if (err) {
         return next(err);
       }
       res.send(users);
-    }); */
+    });
 });
 
 router.get("/:id", authenticate, function (req, res, next) {
