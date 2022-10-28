@@ -1,0 +1,10 @@
+{
+    "watch": [
+      "app.js",
+      "bin/start.js",
+      "config.js",
+      ".env",
+      "models/**/*",
+      "routes/**/*"
+    ]
+}
