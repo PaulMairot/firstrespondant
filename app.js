@@ -20,6 +20,9 @@ app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/interventions", interventionsRouter);
 
+// Serve the apiDoc documentation.
+app.use('/apidoc', express.static('docs'));
+
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));

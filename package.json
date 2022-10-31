@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon",
-    "start": "node ./bin/start"
+    "start": "node ./bin/start",
+    "apidoc": "apidoc -i routes -o docs"
   },
   "dependencies": {
     "bcrypt": "^5.1.0",
@@ -19,6 +20,7 @@
     "morgan": "~1.9.1"
   },
   "devDependencies": {
+    "apidoc": "^0.53.1",
     "nodemon": "^2.0.20"
   }
 }
