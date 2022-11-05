@@ -24,12 +24,27 @@ const respondantSchema = new Schema({
     type: String,
     required: true
   },
+  radius: {
+    type: Number,
+    required: true
+  },
   certificate_validity: {
     type: Boolean,
     required: true
   }
 
 });
+
+respondantSchema.set("toJSON", {
+  transform: transformJsonRespondant
+});
+
+function transformJsonRespondant(doc, json, options) {
+  delete json.__v;
+  json.id = json._id;
+  delete json._id;
+  return json;
+}
 
 
 // Create the model from the schema and export it

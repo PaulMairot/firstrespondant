@@ -3,6 +3,7 @@ import logger from "morgan";
 import indexRouter from "./routes/index.js";
 import usersRouter from "./routes/users.js";
 import interventionsRouter from "./routes/interventions.js";
+import respondantsRouter from "./routes/respondants.js";
 
 import * as config from "./config.js";
 
@@ -18,6 +19,7 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
+app.use("/respondants", respondantsRouter);
 app.use("/interventions", interventionsRouter);
 
 // Serve the apiDoc documentation.

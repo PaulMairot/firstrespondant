@@ -1,6 +1,6 @@
 import express from "express";
 import Respondant from "../models/respondant.js";
-
+import { authenticate } from "./auth.js";
 
 const router = express.Router();
 
@@ -36,6 +36,22 @@ router.post('/', function(req, res, next) {
     res.send(savedRespondant);
   });
 });
+
+router.put('/:id', function(req, res, next) {
+  Respondant.findByIdAndUpdate(req.params.id, {
+    firstName: req.body.firstName,
+    lastName: req.body.lastName,
+    phone: req.body.phone,
+    area: req.body.area,
+    radius: req.body.radius,
+    certifcate_validity: req.body.certificate_validity
+  }).exec(function(err, updatedRespondant) {
+    if (err) {
+      return next(err);
+    }
+  res.send(updatedRespondant);
+  });
+})
 
 router.delete('/', function(req, res, next) {
 
