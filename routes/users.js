@@ -6,7 +6,15 @@ const router = express.Router();
 
 export default router;
 
+/**
+ * @api {get} /users Request a list of the users
+ * @apiName GetUsers
+ * @apiGroup User
+ *
+ * @apiSuccess {Object[]} users List of users
+ */
 router.get("/", function (req, res, next) {
+
     User.find().sort('name').exec(function(err, users) {
       if (err) {
         return next(err);
@@ -22,11 +30,15 @@ router.get("/", function (req, res, next) {
  *
  * @apiParam {Number} id Unique identifier of the user
  *
- * @apiSuccess {String} firstName First name of the user
- * @apiSuccess {String} lastName  Last name of the user
+ * @apiSuccess {String} name Name of the user
+ * @apiSuccess {String} email Email of the user
+ * @apiSuccess {Date} registration_date Date of registration
+ * @apiSuccess {String} id ID of the user
  */
 router.get("/:id", authenticate, function (req, res, next) {
+
   User.findById(req.params.id).exec(function(err, user) {
+
     if (err) {
       return next(err);
     }
@@ -34,6 +46,21 @@ router.get("/:id", authenticate, function (req, res, next) {
   });
 });
 
+
+/**
+ * @api {post} /users Create a new user
+ * @apiName PostUser
+ * @apiGroup User
+ *
+ * @apiBody {String} name Name of the new user.
+ * @apiBody {String} email Email of the new user.
+ * @apiBody {String} password Password of the new user.
+ *
+ * @apiSuccess {String} name Name of the new user
+ * @apiSuccess {String} email Email of the new user
+ * @apiSuccess {Date} registration_date Date of registration
+ * @apiSuccess {String} id ID of the new user
+ */
 router.post('/', function(req, res, next) {
 
   const newUser = new User(req.body);
@@ -50,7 +77,27 @@ router.post('/', function(req, res, next) {
   });
 });
 
+router.put('/:id', function(req, res, next) {
+  User.findByIdAndUpdate(req.params.id, {
+    name: req.body.name,
+    email: req.body.email
+  }).exec(function(err, updatedUser) {
+    if (err) {
+      return next(err);
+    }
+  res.send(updatedUser);
+  });
+})
 
+/**
+ * @api {delete} /users Delete a user
+ * @apiName DeleteUser
+ * @apiGroup User
+ *
+ * @apiParam {Number} id Unique identifier of the user
+ *
+ * @apiSuccess {Object[]} user deleted user
+ */
 router.delete('/', function(req, res, next) {
 
   User.findByIdAndRemove(req.query.id).exec(function(err, removedUser) {
@@ -59,6 +106,4 @@ router.delete('/', function(req, res, next) {
     }
     res.send(removedUser);
   });
-
-  
 });
