@@ -1,13 +1,15 @@
 import express from "express";
 import Intervention from "../models/intervention.js";
-
+import { authenticate } from "./auth.js";
+import Respondant from "../models/respondant.js";
 
 const router = express.Router();
 
 export default router;
 
 router.get("/", function (req, res, next) {
-    Intervention.find().exec(function(err, interventions) {
+
+  Intervention.find().populate("user").populate("respondant").exec(function(err, interventions) {
     if (err) {
       return next(err);
     }
@@ -16,24 +18,69 @@ router.get("/", function (req, res, next) {
 });
 
 
-router.post('/', function(req, res, next) {
+router.post('/', authenticate, async function(req, res, next) {
 
-  const newIntervention = new Intervention(req.body);
+  req.body.user = req.body.userId;
 
-  let date = new Date();
-  newIntervention.creation_date = date.toISOString();
+  console.log(req.body.location.coordinates)
 
-  newIntervention.save(function(err, savedIntervention) {
+  Respondant.find({
+    location: {
+     $near: {
+      $maxDistance: 10000,
+      $geometry: {
+       type: "Point",
+       coordinates: req.body.location.coordinates
+      }
+     }
+    }
+   }).find((error, results) => {
+    if (error) console.log(error);
+    // Check radius of respondant
+    let idClosestRespondant = "";
+    let valueClosestRespondant = 5000;
+    results.forEach(respondant => {
+      if (respondant.radius < valueClosestRespondant) {
+        idClosestRespondant = respondant.id;
+        valueClosestRespondant = respondant.radius
+      }
+    })
+
+    req.body.respondant = idClosestRespondant;
+
+    const newIntervention = new Intervention(req.body);
+
+    let date = new Date();
+    newIntervention.creation_date = date.toISOString();
+  
+    // Make all new intervention active
+    newIntervention.active = true;
+  
+    newIntervention.save(function(err, savedIntervention) {
+      if (err) {
+        return next(err);
+      }
+  
+      res.send(savedIntervention);
+    });
+
+   });
+  
+});
+
+
+router.delete('/all', authenticate, function (req,res,next) {
+
+  Intervention.collection.drop(function (err) {
     if (err) {
       return next(err);
     }
 
-
-    res.send(savedIntervention);
-  });
+    res.sendStatus(204);
+  })
 });
 
-router.delete('/', function(req, res, next) {
+router.delete('/', authenticate, function(req, res, next) {
 
   Intervention.findByIdAndRemove(req.query.id).exec(function(err, interventionRemoved) {
     if (err) {
@@ -41,6 +88,57 @@ router.delete('/', function(req, res, next) {
     }
     res.send(interventionRemoved);
   });
-
-  
 });
+
+router.get('/nearest', authenticate, function(req, res, next) {
+
+  Respondant.find({
+    location: {
+     $near: {
+      $maxDistance: 10000,
+      $geometry: {
+       type: "Point",
+       coordinates: [ 46.829256929675694, 6.659177352666201 ]
+      }
+     }
+    }
+   }).find((error, results) => {
+    if (error) console.log(error);
+    // Check radius of respondant
+    let idClosestRespondant = "";
+    let valueClosestRespondant = 5000;
+    results.forEach(respondant => {
+      if (respondant.radius < valueClosestRespondant) {
+        idClosestRespondant = respondant.id;
+        valueClosestRespondant = respondant.radius
+      }
+    })
+    res.send(idClosestRespondant);
+   });
+});
+
+async function getNearestRespondant(long, lat) {
+  Respondant.find({
+    location: {
+     $near: {
+      $maxDistance: 10000,
+      $geometry: {
+       type: "Point",
+       coordinates: [ long, lat ]
+      }
+     }
+    }
+   }).find((error, results) => {
+    if (error) console.log(error);
+    // Check radius of respondant
+    let idClosestRespondant = "";
+    let valueClosestRespondant = 5000;
+    results.forEach(respondant => {
+      if (respondant.radius < valueClosestRespondant) {
+        idClosestRespondant = respondant.id;
+        valueClosestRespondant = respondant.radius
+      }
+    })
+    return idClosestRespondant;
+   });
+}

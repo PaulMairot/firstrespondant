@@ -13,7 +13,7 @@ export default router;
  *
  * @apiSuccess {Object[]} users List of users
  */
-router.get("/", function (req, res, next) {
+router.get("/", authenticate, function (req, res, next) {
 
     User.find().sort('name').exec(function(err, users) {
       if (err) {
@@ -61,7 +61,7 @@ router.get("/:id", authenticate, function (req, res, next) {
  * @apiSuccess {Date} registration_date Date of registration
  * @apiSuccess {String} id ID of the new user
  */
-router.post('/', function(req, res, next) {
+router.post('/', authenticate, function(req, res, next) {
 
   const newUser = new User(req.body);
 
@@ -77,7 +77,7 @@ router.post('/', function(req, res, next) {
   });
 });
 
-router.put('/:id', function(req, res, next) {
+router.put('/:id', authenticate, function(req, res, next) {
   User.findByIdAndUpdate(req.params.id, {
     firstName: req.body.firstName,
     lastName: req.body.lastName,
@@ -99,7 +99,7 @@ router.put('/:id', function(req, res, next) {
  *
  * @apiSuccess {Object[]} user deleted user
  */
-router.delete('/', function(req, res, next) {
+router.delete('/', authenticate, function(req, res, next) {
 
   User.findByIdAndRemove(req.query.id).exec(function(err, removedUser) {
     if (err) {

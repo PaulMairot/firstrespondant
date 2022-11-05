@@ -6,7 +6,7 @@ const router = express.Router();
 
 export default router;
 
-router.get("/", function (req, res, next) {
+router.get("/", authenticate, function (req, res, next) {
     Respondant.find().exec(function(err, respondants) {
     if (err) {
       return next(err);
@@ -24,7 +24,7 @@ router.get("/:id", authenticate, function (req, res, next) {
   });
 });
 
-router.post('/', function(req, res, next) {
+router.post('/', authenticate, function(req, res, next) {
 
   const newRespondant = new Respondant(req.body);
 
@@ -37,7 +37,7 @@ router.post('/', function(req, res, next) {
   });
 });
 
-router.put('/:id', function(req, res, next) {
+router.put('/:id', authenticate, function(req, res, next) {
   Respondant.findByIdAndUpdate(req.params.id, {
     firstName: req.body.firstName,
     lastName: req.body.lastName,
@@ -53,7 +53,17 @@ router.put('/:id', function(req, res, next) {
   });
 })
 
-router.delete('/', function(req, res, next) {
+router.delete('/all', authenticate, function(req, res, next) {
+
+  Respondant.collection.drop(function (err) {
+    if (err) {
+      return next(err);
+    }
+    res.sendStatus(204);
+  })
+});
+
+router.delete('/', authenticate, function(req, res, next) {
 
   Respondant.findByIdAndRemove(req.query.id).exec(function(err, respondantRemoved) {
     if (err) {
@@ -61,6 +71,4 @@ router.delete('/', function(req, res, next) {
     }
     res.send(respondantRemoved);
   });
-
-  
 });

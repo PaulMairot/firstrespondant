@@ -2,7 +2,13 @@ import { Timestamp } from 'mongodb';
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
-const geolocatedSchema = new Schema({
+// Define the schema for interventions
+const interventionSchema = new Schema({
+  description: {
+    type: String,
+    maxlength: 300,
+    required: true
+  },
   location: {
     type: {
       type: String,
@@ -17,21 +23,6 @@ const geolocatedSchema = new Schema({
         message: '{VALUE} is not a valid longitude/latitude(/altitude) coordinates array'
       }
     }
-  }
-});
-
-// Create a geospatial index on the location property.
-geolocatedSchema.index({ location: '2dsphere' });
-
-// Define the schema for interventions
-const interventionSchema = new Schema({
-  description: {
-    type: String,
-    required: true
-  },
-  location: {
-    type: geolocatedSchema,
-    required: true
   },
   picture: {
     type: String
@@ -44,11 +35,28 @@ const interventionSchema = new Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Respondant'
   },
+  active: {
+    type: Boolean
+  },
   creation_date: {
     type: Date
   }
 
 });
+
+// Create a geospatial index on the location property.
+interventionSchema.index({ location: '2dsphere' });
+
+interventionSchema.set("toJSON", {
+  transform: transformJsonIntervention
+});
+
+function transformJsonIntervention(doc, json, options) {
+  delete json.__v;
+  json.id = json._id;
+  delete json._id;
+  return json;
+}
 
 // Validate a GeoJSON coordinates array (longitude, latitude and optional altitude).
 function validateGeoJsonCoordinates(value) {

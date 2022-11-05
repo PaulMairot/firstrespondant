@@ -20,9 +20,20 @@ const respondantSchema = new Schema({
     type: String,
     required: true
   },
-  area: {
-    type: String,
-    required: true
+  location: {
+    type: {
+      type: String,
+      required: true,
+      enum: [ 'Point' ]
+    },
+    coordinates: {
+      type: [ Number ],
+      required: true,
+      validate: {
+        validator: validateGeoJsonCoordinates,
+        message: '{VALUE} is not a valid longitude/latitude(/altitude) coordinates array'
+      }
+    }
   },
   radius: {
     type: Number,
@@ -35,6 +46,9 @@ const respondantSchema = new Schema({
 
 });
 
+// Create a geospatial index on the location property.
+respondantSchema.index({ location: '2dsphere' });
+
 respondantSchema.set("toJSON", {
   transform: transformJsonRespondant
 });
@@ -45,6 +59,20 @@ function transformJsonRespondant(doc, json, options) {
   delete json._id;
   return json;
 }
+
+// Validate a GeoJSON coordinates array (longitude, latitude and optional altitude).
+function validateGeoJsonCoordinates(value) {
+  return Array.isArray(value) && value.length >= 2 && value.length <= 3 && isLongitude(value[0]) && isLatitude(value[1]);
+}
+
+function isLatitude(value) {
+  return value >= -90 && value <= 90;
+}
+
+function isLongitude(value) {
+  return value >= -180 && value <= 180;
+}
+
 
 
 // Create the model from the schema and export it
