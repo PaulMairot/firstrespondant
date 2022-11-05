@@ -4,9 +4,17 @@ const Schema = mongoose.Schema;
 
 // Define the schema for respondants
 const respondantSchema = new Schema({
-  name: {
+  firstName: {
     type: String,
-    required: true
+    required: true,
+    minlength: 2,
+    maxlength: 20
+  },
+  lastName: {
+    type: String,
+    required: true,
+    minlength: 2,
+    maxlength: 20
   },
   phone: {
     type: String,
@@ -22,7 +30,6 @@ const respondantSchema = new Schema({
   }
 
 });
-
 
 
 // Create the model from the schema and export it

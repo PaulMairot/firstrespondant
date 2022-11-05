@@ -6,10 +6,17 @@ const Schema = mongoose.Schema;
 
 // Define the schema for users
 const userSchema = new Schema({
-  name: {
+  firstName: {
     type: String,
     required: true,
-    unique: true
+    minlength: 2,
+    maxlength: 20
+  },
+  lastName: {
+    type: String,
+    required: true,
+    minlength: 2,
+    maxlength: 20
   },
   email: {
     type: String,
@@ -38,12 +45,12 @@ userSchema.set("toJSON", {
 });
 
 function transformJsonUser(doc, json, options) {
- // Remove the hashed password from the generated JSON.
- delete json.passwordHash;
- delete json.__v;
- json.id = json._id;
- delete json._id;
- return json;
+  // Remove the hashed password from the generated JSON.
+  delete json.passwordHash;
+  delete json.__v;
+  json.id = json._id;
+  delete json._id;
+  return json;
 }
 
 // Create the model from the schema and export it

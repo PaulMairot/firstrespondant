@@ -26,8 +26,13 @@ const interventionSchema = new Schema({
   picture: {
     type: String
   },
-  user_id: {
-    type: Object
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  },
+  respondant: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Respondant'
   },
   creation_date: {
     type: Date
@@ -50,10 +55,6 @@ function isLatitude(value) {
 function isLongitude(value) {
   return value >= -180 && value <= 180;
 }
-
-
-
-
 
 
 // Create the model from the schema and export it
