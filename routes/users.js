@@ -77,6 +77,19 @@ router.post('/', authenticate, function(req, res, next) {
   });
 });
 
+
+/**
+ * @api {put} /users/:id Modify User's informations
+ * @apiName UpdateUser
+ * @apiGroup User
+ * 
+ * @apiParam {Number} id Unique identifier of the user
+ *
+ * @apiParam {String} [firstname] Firstname of the User.
+ * @apiParam {String} [lastname]  Lastname of the User.
+ * @apiParam {String} [email]  Email of the User.
+ *
+ */
 router.put('/:id', authenticate, function(req, res, next) {
   User.findByIdAndUpdate(req.params.id, {
     firstName: req.body.firstName,
@@ -91,17 +104,17 @@ router.put('/:id', authenticate, function(req, res, next) {
 })
 
 /**
- * @api {delete} /users Delete a user
+ * @api {delete} /users/:id Delete a user
  * @apiName DeleteUser
  * @apiGroup User
- *
+ * 
  * @apiParam {Number} id Unique identifier of the user
  *
  * @apiSuccess {Object[]} user deleted user
  */
-router.delete('/', authenticate, function(req, res, next) {
+router.delete('/:id', authenticate, function(req, res, next) {
 
-  User.findByIdAndRemove(req.query.id).exec(function(err, removedUser) {
+  User.findByIdAndRemove(req.params.id).exec(function(err, removedUser) {
     if (err) {
       return next(err);
     }

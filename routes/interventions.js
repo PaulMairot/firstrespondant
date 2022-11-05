@@ -22,31 +22,20 @@ router.post('/', authenticate, async function(req, res, next) {
 
   req.body.user = req.body.userId;
 
-  console.log(req.body.location.coordinates)
-
   Respondant.find({
     location: {
      $near: {
-      $maxDistance: 10000,
       $geometry: {
        type: "Point",
        coordinates: req.body.location.coordinates
       }
      }
     }
-   }).find((error, results) => {
+   }).limit(1).find((error, results) => {
     if (error) console.log(error);
-    // Check radius of respondant
-    let idClosestRespondant = "";
-    let valueClosestRespondant = 5000;
-    results.forEach(respondant => {
-      if (respondant.radius < valueClosestRespondant) {
-        idClosestRespondant = respondant.id;
-        valueClosestRespondant = respondant.radius
-      }
-    })
 
-    req.body.respondant = idClosestRespondant;
+    // TODO Check radius of respondant
+    req.body.respondant = results[0].id;
 
     const newIntervention = new Intervention(req.body);
 
