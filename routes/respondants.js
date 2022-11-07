@@ -52,20 +52,20 @@ router.get("/:id", authenticate, function (req, res, next) {
  * @apiName PostRespondant
  * @apiGroup Respondant
  *
- * @apiBody {String} firstName Firstname of the respondant
- * @apiBody {String} lastName Lastname of the respondant
- * @apiBody {String} phone Phone of the respondant
- * @apiBody {Point} location Location of the respondant
- * @apiBody {Number} radius range of action of the respondant
- * @apiBody {Boolean} certificate_validity Validity of the respondant's certificate
+ * @apiBody {String} firstName Firstname of the respondant.
+ * @apiBody {String} lastName Lastname of the respondant.
+ * @apiBody {String} phone Phone of the respondant.
+ * @apiBody {Point} location Location of the respondant.
+ * @apiBody {Number} radius range of action of the respondant.
+ * @apiBody {Boolean} certificate_validity Validity of the respondant's certificate.
  *
- * @apiSuccess {String} firstName Firstname of the respondant
- * @apiSuccess {String} lastName Lastname of the respondant
- * @apiSuccess {String} phone Phone of the respondant
- * @apiSuccess {Point} location Location of the respondant
- * @apiSuccess {Number} radius range of action of the respondant
- * @apiSuccess {Boolean} certificate_validity Validity of the respondant's certificate
- * @apiSuccess {String} id ID of the respondant
+ * @apiSuccess {String} firstName Firstname of the respondant.
+ * @apiSuccess {String} lastName Lastname of the respondant.
+ * @apiSuccess {String} phone Phone of the respondant.
+ * @apiSuccess {Point} location Location of the respondant.
+ * @apiSuccess {Number} radius Range of action of the respondant.
+ * @apiSuccess {Boolean} certificate_validity Validity of the respondant's certificate.
+ * @apiSuccess {String} id ID of the respondant.
  */
 router.post('/', authenticate, function(req, res, next) {
 
@@ -80,12 +80,34 @@ router.post('/', authenticate, function(req, res, next) {
   });
 });
 
+/**
+ * @api {put} /respondants/:id Modify Respondant's informations
+ * @apiName UpdateRespondant
+ * @apiGroup Respondant
+ * 
+ * @apiParam {Number} id Unique identifier of the respondants
+ *
+ * @apiParam {String} [firstname] Firstname of the respondants.
+ * @apiParam {String} [lastname]  Lastname of the respondants.
+ * @apiParam {String} [phone]  Phone of the respondants.
+ * @apiParam {String} [location]  Location of the respondants.
+ * @apiParam {String} [radius] Range of action of the respondant.
+ * @apiParam {String} [certificate_validity] Validity of the respondant's certificate
+ *
+ * @apiSuccess {String} firstName Firstname of the respondant.
+ * @apiSuccess {String} lastName Lastname of the respondant.
+ * @apiSuccess {String} phone Phone of the respondant.
+ * @apiSuccess {Point} location Location of the respondant.
+ * @apiSuccess {Number} radius Range of action of the respondant.
+ * @apiSuccess {Boolean} certificate_validity Validity of the respondant's certificate.
+ * @apiSuccess {String} id ID of the respondant.
+ */
 router.put('/:id', authenticate, function(req, res, next) {
   Respondant.findByIdAndUpdate(req.params.id, {
     firstName: req.body.firstName,
     lastName: req.body.lastName,
     phone: req.body.phone,
-    area: req.body.area,
+    location: req.body.location,
     radius: req.body.radius,
     certifcate_validity: req.body.certificate_validity
   }).exec(function(err, updatedRespondant) {
@@ -96,6 +118,12 @@ router.put('/:id', authenticate, function(req, res, next) {
   });
 })
 
+/**
+ * @api {delete} /respondants/all Delete all respondants
+ * @apiName DeleteAllRespondants
+ * @apiGroup Respondant
+ *
+ */
 router.delete('/all', authenticate, function(req, res, next) {
 
   Respondant.collection.drop(function (err) {
@@ -106,6 +134,15 @@ router.delete('/all', authenticate, function(req, res, next) {
   })
 });
 
+/**
+ * @api {delete} /respondant/:id Delete a respondant
+ * @apiName DeleteRespondant
+ * @apiGroup Respondant
+ * 
+ * @apiParam {Number} id Unique identifier of the respondant
+ *
+ * @apiSuccess {Object[]} respondant deleted respondant
+ */
 router.delete('/', authenticate, function(req, res, next) {
 
   Respondant.findByIdAndRemove(req.query.id).exec(function(err, respondantRemoved) {
