@@ -52,6 +52,23 @@ router.get("/:id", authenticate, function (req, res, next) {
   });
 });
 
+
+router.get("/:id/interventions", authenticate, function (req, res, next) {
+
+  Intervention.find({ user: req.params.id}).exec(function(err, interventions) {
+    if (!interventions) {
+      res.status(404).send("No intervention found.");
+    }
+
+    if (err) {
+      return next(err);
+    }
+
+    res.send(interventions);
+  });
+});
+
+
 /**
  * @api {post} /respondants Create a new respondant
  * @apiName PostRespondant

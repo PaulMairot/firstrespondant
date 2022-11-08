@@ -1,6 +1,7 @@
 import express from "express";
 import User from "../models/user.js";
 import { authenticate } from "./auth.js";
+import Intervention from "../models/intervention.js";
 
 const router = express.Router();
 
@@ -48,6 +49,22 @@ router.get("/:id", authenticate, function (req, res, next) {
     }
 
     res.send(user);
+  });
+});
+
+
+router.get("/:id/interventions", authenticate, function (req, res, next) {
+
+  Intervention.find({ user: req.params.id}).exec(function(err, interventions) {
+    if (!interventions) {
+      res.status(404).send("No intervention found.");
+    }
+
+    if (err) {
+      return next(err);
+    }
+
+    res.send(interventions);
   });
 });
 
