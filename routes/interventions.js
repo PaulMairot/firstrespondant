@@ -7,6 +7,13 @@ const router = express.Router();
 
 export default router;
 
+/**
+ * @api {get} /interventions Request a list of the interventions
+ * @apiName GetInterventions
+ * @apiGroup Intervention
+ *
+ * @apiSuccess {Object[]} interventions List of all interventions
+ */
 router.get("/", function (req, res, next) {
 
   Intervention.find().populate("user").populate("respondant").exec(function(err, interventions) {
@@ -18,6 +25,54 @@ router.get("/", function (req, res, next) {
 });
 
 
+/**
+ * @api {get} /interventions/:id Request an intervention's informations
+ * @apiName GetIntervention
+ * @apiGroup Intervention
+ *
+ * @apiParam {Number} id Unique identifier of the respondant
+ *
+ * @apiSuccess {Point} location Location of the intervention.
+ * @apiSuccess {String} description Description of the intervention.
+ * @apiSuccess {Object[]} user User that create the intervention.
+ * @apiSuccess {Object[]} respondant Respondant assigned to the intervention.
+ * @apiSuccess {Date} creation_date Date of creation of the intervention.
+ * @apiSuccess {Boolean} active Status of the intervention (active or inactive).
+ * @apiSuccess {String} picture Link to the picture of the intervention.
+ * @apiSuccess {String} id ID of the intervention.
+ */
+router.get("/:id", authenticate, function (req, res, next) {
+  Intervention.findById(req.params.id).populate("user").populate("respondant").exec(function(err, intervention) {
+    
+    if (!intervention) {
+      res.status(404).send("Intervention with ID " + req.params.id + " not found.");
+    }
+    
+    if (err) {
+      return next(err);
+    }
+    res.send(intervention);
+  });
+});
+
+
+/**
+ * @api {post} /interventions Create a new intervention
+ * @apiName PostIntervention
+ * @apiGroup Intervention
+ *
+ * @apiBody {String} description Description of the intervention
+ * @apiBody {String} userId ID of the user who creates the intervention.
+ * @apiBody {Point} location Location of the intervention.
+ * @apiBody {String} (picture) Picture of the intervention.
+ *
+ * @apiSuccess {String} description Description of the intervention.
+ * @apiSuccess {Point} location Location of the intervention.
+ * @apiSuccess {Date} registration_date Date of registration
+ * @apiSuccess {String} picture Picture of the intervention.
+ * @apiSuccess {String} user ID of the user who creates the intervention.
+ * @apiSuccess {String} respondant ID of the closest respondand, assigned to the intervention.
+ */
 router.post('/', authenticate, async function(req, res, next) {
 
   req.body.user = req.body.userId;
@@ -57,7 +112,12 @@ router.post('/', authenticate, async function(req, res, next) {
   
 });
 
-
+/**
+ * @api {delete} /interventions/all Delete all interventions
+ * @apiName DeleteAllInterventions
+ * @apiGroup Intervention
+ *
+ */
 router.delete('/all', authenticate, function (req,res,next) {
 
   Intervention.collection.drop(function (err) {
@@ -69,6 +129,16 @@ router.delete('/all', authenticate, function (req,res,next) {
   })
 });
 
+
+/**
+ * @api {delete} /intervention/:id Delete an intervention.
+ * @apiName DeleteIntervention
+ * @apiGroup Intervention
+ * 
+ * @apiParam {Number} id Unique identifier of the intervention.
+ *
+ * @apiSuccess {Object[]} intervention Deleted intervention.
+ */
 router.delete('/', authenticate, function(req, res, next) {
 
   Intervention.findByIdAndRemove(req.query.id).exec(function(err, interventionRemoved) {
@@ -79,6 +149,15 @@ router.delete('/', authenticate, function(req, res, next) {
   });
 });
 
+/**
+ * @api {get} /intervention/nearest Delete an intervention.
+ * @apiName DeleteIntervention
+ * @apiGroup Intervention
+ * 
+ * @apiParam {Number} id Unique identifier of the intervention.
+ *
+ * @apiSuccess {Object[]} intervention Deleted intervention.
+ */
 router.get('/nearest', authenticate, function(req, res, next) {
 
   Respondant.find({
@@ -87,7 +166,7 @@ router.get('/nearest', authenticate, function(req, res, next) {
       $maxDistance: 10000,
       $geometry: {
        type: "Point",
-       coordinates: [ 46.829256929675694, 6.659177352666201 ]
+       coordinates: [ req.body.long, req.body.lat ]
       }
      }
     }

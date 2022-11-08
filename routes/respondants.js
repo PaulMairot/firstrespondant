@@ -36,10 +36,15 @@ router.get("/", authenticate, function (req, res, next) {
  * @apiSuccess {Number} radius range of action of the respondant
  * @apiSuccess {Boolean} certificate_validity Validity of the respondant's certificate
  * @apiSuccess {String} id ID of the respondant
- *
+ * 
  */
 router.get("/:id", authenticate, function (req, res, next) {
   Respondant.findById(req.params.id).exec(function(err, respondant) {
+    
+    if (!respondant) {
+      res.status(404).send("Respondant with ID " + req.params.id + " not found.");
+    }
+    
     if (err) {
       return next(err);
     }

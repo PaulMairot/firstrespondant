@@ -36,12 +36,17 @@ router.get("/", authenticate, function (req, res, next) {
  * @apiSuccess {String} id ID of the user
  */
 router.get("/:id", authenticate, function (req, res, next) {
-
+  
   User.findById(req.params.id).exec(function(err, user) {
+    
+    if (!user) {
+      res.status(404).send("User with ID " + req.params.id + " not found.");
+    }
 
     if (err) {
       return next(err);
     }
+
     res.send(user);
   });
 });
