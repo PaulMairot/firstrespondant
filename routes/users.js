@@ -52,7 +52,16 @@ router.get("/:id", authenticate, function (req, res, next) {
   });
 });
 
-
+/**
+ * @api {get} /users/:id/interventions Request a list of the interventions of a user
+ * @apiName GetUserIntervention
+ * @apiGroup User
+ *
+ * @apiParam {Number} id Unique identifier of the user
+ *
+ * @apiSuccess {Object[]} userInterventions List of the interventions of a user
+ * 
+ */
 router.get("/:id/interventions", authenticate, function (req, res, next) {
 
   Intervention.find({ user: req.params.id}).exec(function(err, interventions) {

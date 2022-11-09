@@ -52,7 +52,16 @@ router.get("/:id", authenticate, function (req, res, next) {
   });
 });
 
-
+/**
+ * @api {get} /respondants/:id/interventions Request a list of the interventions of a respondant
+ * @apiName GetRespondantIntervention
+ * @apiGroup Respondant
+ *
+ * @apiParam {Number} id Unique identifier of the respondant
+ *
+ * @apiSuccess {Object[]} respondantInterventions List of the interventions of a respondant
+ * 
+ */
 router.get("/:id/interventions", authenticate, function (req, res, next) {
 
   Intervention.find({ user: req.params.id}).exec(function(err, interventions) {
@@ -67,7 +76,6 @@ router.get("/:id/interventions", authenticate, function (req, res, next) {
     res.send(interventions);
   });
 });
-
 
 /**
  * @api {post} /respondants Create a new respondant
