@@ -34,13 +34,13 @@ router.get("/", function (req, res, next) {
 
     query = query.skip((page - 1) * pageSize).limit(pageSize);
 
-    query.exec(function(err, movies) {
+    query.exec(function(err, interventions) {
       if (err) { return next(err); }
       res.send({
         page: page,
         pageSize: pageSize,
         total: total,
-        data: movies
+        data: interventions
       });
     });
 
