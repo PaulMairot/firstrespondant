@@ -16,12 +16,44 @@ export default router;
  */
 router.get("/", function (req, res, next) {
 
-  Intervention.find().populate("user").populate("respondant").exec(function(err, interventions) {
+  Intervention.find().count(function(err, total) {
+    if (err) {
+      return next(err);
+    }
+    let query = Intervention.find();
+
+    let page = parseInt(req.query.page, 10);
+    if (isNaN(page) || page < 1) {
+      page = 1;
+    }
+
+    let pageSize = parseInt(req.query.pageSize, 10);
+    if (isNaN(pageSize) || pageSize < 0 || pageSize > 10) {
+      pageSize = 10;
+    }
+
+    query = query.skip((page - 1) * pageSize).limit(pageSize);
+
+    query.exec(function(err, movies) {
+      if (err) { return next(err); }
+      res.send({
+        page: page,
+        pageSize: pageSize,
+        total: total,
+        data: movies
+      });
+    });
+
+  });
+
+
+
+  /* Intervention.find().populate("user").populate("respondant").exec(function(err, interventions) {
     if (err) {
       return next(err);
     }
     res.send(interventions);
-  });
+  }); */
 });
 
 
