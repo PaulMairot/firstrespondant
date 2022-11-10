@@ -1,6 +1,7 @@
 import express from "express";
 import Respondant from "../models/respondant.js";
 import { authenticate } from "./auth.js";
+import Intervention from "../models/intervention.js";
 
 const router = express.Router();
 
@@ -39,7 +40,7 @@ router.get("/", authenticate, function (req, res, next) {
  * 
  */
 router.get("/:id", authenticate, function (req, res, next) {
-  Respondant.findById(req.params.id).exec(function(err, respondant) {
+  Respondant.findById(req.params.id).exec( async function(err, respondant) {
     
     if (!respondant) {
       res.status(404).send("Respondant with ID " + req.params.id + " not found.");
@@ -48,6 +49,24 @@ router.get("/:id", authenticate, function (req, res, next) {
     if (err) {
       return next(err);
     }
+
+    Intervention.aggregate([
+      {
+        $lookup: {
+          from: 'respondants',
+          localField: 'id',
+          foreignField: 'respondant',
+          as: 'interventions'
+        }
+      },
+      {
+        $count: "nbrInterventions"
+      }
+      
+    ], function(err, results) {
+      respondant.set('nbrInterventions', results[0].nbrInterventions, {strict: false})
+      console.log(results[0].nbrInterventions);
+    });
     res.send(respondant);
   });
 });

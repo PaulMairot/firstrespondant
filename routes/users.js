@@ -92,7 +92,7 @@ router.get("/:id/interventions", authenticate, function (req, res, next) {
  * @apiSuccess {Date} registration_date Date of registration
  * @apiSuccess {String} id ID of the new user
  */
-router.post('/', authenticate, function(req, res, next) {
+router.post('/', function(req, res, next) {
 
   const newUser = new User(req.body);
 

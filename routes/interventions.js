@@ -46,8 +46,6 @@ router.get("/", function (req, res, next) {
 
   });
 
-
-
   /* Intervention.find().populate("user").populate("respondant").exec(function(err, interventions) {
     if (err) {
       return next(err);
