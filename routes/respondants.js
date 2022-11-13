@@ -159,7 +159,7 @@ router.put('/:id', authenticate, function(req, res, next) {
     location: req.body.location,
     radius: req.body.radius,
     certifcate_validity: req.body.certificate_validity
-  }).exec(function(err, updatedRespondant) {
+  }, {new: true}).exec(function(err, updatedRespondant) {
     if (err) {
       return next(err);
     }

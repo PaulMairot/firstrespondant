@@ -2,6 +2,7 @@ import express from "express";
 import User from "../models/user.js";
 import { authenticate } from "./auth.js";
 import Intervention from "../models/intervention.js";
+import { broadcastMessage } from '../ws.js'
 
 const router = express.Router();
 
@@ -15,13 +16,16 @@ export default router;
  * @apiSuccess {Object[]} users List of users
  */
 router.get("/", authenticate, function (req, res, next) {
-
-    User.find().sort('name').exec(function(err, users) {
-      if (err) {
-        return next(err);
-      }
-      res.send(users);
-    });
+  
+  User.find().sort('firstName').exec(function(err, users) {
+    if (err) {
+      return next(err);
+    }
+    broadcastMessage({ hello: 'world' });
+    
+    res.send(users);
+  });
+    
 });
 
 /**
@@ -92,20 +96,27 @@ router.get("/:id/interventions", authenticate, function (req, res, next) {
  * @apiSuccess {Date} registration_date Date of registration
  * @apiSuccess {String} id ID of the new user
  */
-router.post('/', function(req, res, next) {
+router.post('/', async function(req, res, next) {
+  try {
+    const newUser = new User(req.body);
 
-  const newUser = new User(req.body);
+    let date = new Date();
+    newUser.registration_date = date.toISOString();
 
-  let date = new Date();
-  newUser.registration_date = date.toISOString();
+    await newUser.save();
+    res.status(200).send(newUser);
+  } catch (error) {
+    if (error.name === "ValidationError") {
+      let errors = {};
 
-  newUser.save(function(err, savedUser) {
-    if (err) {
-      return next(err);
+      Object.keys(error.errors).forEach((key) => {
+        errors[key] = error.errors[key].message;
+      });
+
+      return res.status(400).send(errors);
     }
-
-    res.send(savedUser);
-  });
+    res.status(500).send("Something went wrong.");
+  }
 });
 
 
@@ -126,12 +137,13 @@ router.put('/:id', authenticate, function(req, res, next) {
     firstName: req.body.firstName,
     lastName: req.body.lastName,
     email: req.body.email
-  }).exec(function(err, updatedUser) {
+  }, {new: true, runValidators: true}).exec(function(err, updatedUser) {
     if (err) {
       return next(err);
     }
   res.send(updatedUser);
-  });
+  }); 
+
 })
 
 /**
@@ -140,15 +152,21 @@ router.put('/:id', authenticate, function(req, res, next) {
  * @apiGroup User
  * 
  * @apiParam {Number} id Unique identifier of the user
- *
+ *'
  * @apiSuccess {Object[]} user deleted user
  */
 router.delete('/:id', authenticate, function(req, res, next) {
 
-  User.findByIdAndRemove(req.params.id).exec(function(err, removedUser) {
+  User.findById(req.params.id).deleteOne().exec(function(err, removedUser) {
+    if (!removedUser) {
+      res.status(404).send("User with ID " + req.params.id + " not found.");
+    } else {
+      res.sendStatus(204);
+    }
+    
     if (err) {
       return next(err);
     }
-    res.send(removedUser);
+      
   });
 });

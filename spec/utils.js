@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken"
 
 export const cleanUpDatabase = async function() {
   await Promise.all([
-    User.deleteMany({})
+    User.deleteMany()
   ]);
 };
 
