@@ -94,12 +94,12 @@ router.get("/:id", authenticate, function (req, res, next) {
  * @apiBody {String} description Description of the intervention
  * @apiBody {String} userId ID of the user who creates the intervention.
  * @apiBody {Point} location Location of the intervention.
- * @apiBody {String} (picture) Picture of the intervention.
+ * @apiBody {String} picture Picture of the intervention.
  *
  * @apiSuccess {String} description Description of the intervention.
  * @apiSuccess {Point} location Location of the intervention.
- * @apiSuccess {Date} registration_date Date of registration
- * @apiSuccess {String} picture Picture of the intervention.
+ * @apiSuccess {Date} creation_date Date of creation.
+ * @apiSuccess {String} [picture] Picture of the intervention.
  * @apiSuccess {String} user ID of the user who creates the intervention.
  * @apiSuccess {String} respondant ID of the closest respondand, assigned to the intervention.
  */
@@ -169,7 +169,7 @@ router.delete('/all', authenticate, function (req,res,next) {
  *
  * @apiSuccess {Object[]} intervention Deleted intervention.
  */
-router.delete('/', authenticate, function(req, res, next) {
+router.delete('/:id', authenticate, function(req, res, next) {
 
   Intervention.findByIdAndRemove(req.query.id).exec(function(err, interventionRemoved) {
     if (err) {
@@ -180,7 +180,7 @@ router.delete('/', authenticate, function(req, res, next) {
 });
 
 /**
- * @api {get} /intervention/nearest Delete an intervention.
+ * @api {get} /intervention/:id/nearest Delete an intervention.
  * @apiName DeleteIntervention
  * @apiGroup Intervention
  * 
@@ -188,7 +188,7 @@ router.delete('/', authenticate, function(req, res, next) {
  *
  * @apiSuccess {Object[]} intervention Deleted intervention.
  */
-router.get('/nearest', authenticate, function(req, res, next) {
+router.get('/:id/nearest', authenticate, function(req, res, next) {
 
   Respondant.find({
     location: {

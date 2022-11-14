@@ -183,7 +183,6 @@ describe('PUT /users/:id', function() {
             .set('Authorization', `Bearer ${token}`)
             .expect(200);
     });
-
 });
 
 describe('DELETE /users/:id', function() {
