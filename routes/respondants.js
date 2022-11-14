@@ -39,6 +39,8 @@ router.get("/", authenticate, function (req, res, next) {
  * @apiSuccess {Boolean} certificate_validity Validity of the respondant's certificate
  * @apiSuccess {String} id ID of the respondant
  * 
+ * @apiError (Error 404) RespondantNotFound The <code>id</code> of the respondant was not found.
+ * 
  */
 router.get("/:id", authenticate, function (req, res, next) {
   Respondant.findById(req.params.id).exec( async function(err, respondant) {
@@ -81,10 +83,12 @@ router.get("/:id", authenticate, function (req, res, next) {
  *
  * @apiSuccess {Object[]} respondantInterventions List of the interventions of a respondant
  * 
+ * @apiError (Error 404) NoInterventionFound No intervention was found for this user.
+ * 
  */
 router.get("/:id/interventions", authenticate, function (req, res, next) {
 
-  Intervention.find({ user: req.params.id}).exec(function(err, interventions) {
+  Intervention.find({ respondant: req.params.id}).exec(function(err, interventions) {
     if (!interventions) {
       res.status(404).send("No intervention found.");
     }
@@ -168,6 +172,9 @@ router.post('/', authenticate, function(req, res, next) {
  * @apiSuccess {Number} radius Range of action of the respondant.
  * @apiSuccess {Boolean} certificate_validity Validity of the respondant's certificate.
  * @apiSuccess {String} id ID of the respondant.
+ * 
+ * @apiError (Error 404) RespondantNotFound The <code>id</code> of the respondant was not found.
+ * 
  */
 router.put('/:id', authenticate, function(req, res, next) {
   Respondant.findByIdAndUpdate(req.params.id, {
@@ -209,6 +216,9 @@ router.delete('/all', authenticate, function(req, res, next) {
  * @apiParam {Number} id Unique identifier of the respondant
  *
  * @apiSuccess {Object[]} respondant deleted respondant
+ * 
+ * @apiError (Error 404) RespondantNotFound The <code>id</code> of the respondant was not found.
+ * 
  */
 router.delete('/:id', authenticate, function(req, res, next) {
 

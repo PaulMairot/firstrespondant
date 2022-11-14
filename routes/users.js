@@ -37,6 +37,9 @@ router.get("/", authenticate, function (req, res, next) {
  * @apiSuccess {String} email Email of the user
  * @apiSuccess {Date} registration_date Date of registration
  * @apiSuccess {String} id ID of the user
+ * 
+ * @apiError (Error 404) UserNotFound The <code>id</code> of the user was not found.
+ * 
  */
 router.get("/:id", authenticate, function (req, res, next) {
   
@@ -62,6 +65,8 @@ router.get("/:id", authenticate, function (req, res, next) {
  * @apiParam {Number} id Unique identifier of the user
  *
  * @apiSuccess {Object[]} userInterventions List of the interventions of a user
+ * 
+ * @apiError (Error 404) NoInterventionFound No intervention was found for this user.
  * 
  */
 router.get("/:id/interventions", authenticate, function (req, res, next) {
@@ -93,6 +98,9 @@ router.get("/:id/interventions", authenticate, function (req, res, next) {
  * @apiSuccess {String} email Email of the new user
  * @apiSuccess {Date} registration_date Date of registration
  * @apiSuccess {String} id ID of the new user
+ * 
+ * @apiError (Error 400) ValidationError An error occured during the validation of the data.
+ * 
  */
 router.post('/', async function(req, res, next) {
   try {
@@ -152,6 +160,9 @@ router.put('/:id', authenticate, function(req, res, next) {
  * @apiParam {Number} id Unique identifier of the user
  *'
  * @apiSuccess {Object[]} user deleted user
+ * 
+ * @apiError (Error 404) UserNotFound The <code>id</code> of the user was not found.
+ * 
  */
 router.delete('/:id', authenticate, function(req, res, next) {
 

@@ -70,6 +70,9 @@ router.get("/", function (req, res, next) {
  * @apiSuccess {Boolean} active Status of the intervention (active or inactive).
  * @apiSuccess {String} picture Link to the picture of the intervention.
  * @apiSuccess {String} id ID of the intervention.
+ * 
+ * @apiError (Error 404) InterventionNotFound The <code>id</code> of the intervention was not found.
+ * 
  */
 router.get("/:id", authenticate, function (req, res, next) {
   Intervention.findById(req.params.id).populate("user").populate("respondant").exec(function(err, intervention) {
@@ -168,14 +171,23 @@ router.delete('/all', authenticate, function (req,res,next) {
  * @apiParam {Number} id Unique identifier of the intervention.
  *
  * @apiSuccess {Object[]} intervention Deleted intervention.
+ * 
+ * @apiError (Error 404) InterventionNotFound The <code>id</code> of the intervention was not found.
+ * 
  */
 router.delete('/:id', authenticate, function(req, res, next) {
 
-  Intervention.findByIdAndRemove(req.query.id).exec(function(err, interventionRemoved) {
+  Intervention.findById(req.params.id).deleteOne().exec(function(err, removedIntervention) {
+    if (!removedIntervention) {
+      res.status(404).send("Respondant with ID " + req.params.id + " not found.");
+    } else {
+      res.sendStatus(204);
+    }
+    
     if (err) {
       return next(err);
     }
-    res.send(interventionRemoved);
+      
   });
 });
 
