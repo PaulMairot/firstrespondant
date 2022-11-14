@@ -25,7 +25,7 @@ const interventionSchema = new Schema({
     }
   },
   picture: {
-    type: String
+    type: Buffer
   },
   user: {
     type: mongoose.Schema.Types.ObjectId,
