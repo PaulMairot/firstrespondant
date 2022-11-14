@@ -2,6 +2,7 @@ import express from "express";
 import Respondant from "../models/respondant.js";
 import { authenticate } from "./auth.js";
 import Intervention from "../models/intervention.js";
+import { broadcastMessage } from '../ws.js'
 
 const router = express.Router();
 
@@ -125,6 +126,23 @@ router.post('/', authenticate, function(req, res, next) {
       return next(err);
     }
 
+    Intervention.aggregate([
+      {
+        $lookup: {
+          from: 'respondants',
+          localField: 'id',
+          foreignField: 'respondant',
+          as: 'interventions'
+        }
+      },
+      {
+        $count: "nbrInterventions"
+      }
+      
+    ], function(err, results) {
+      broadcastMessage({title: 'New respondant !', message: 'There are now ' + results[0].nbrInterventions + ' respondants.'});
+    });
+
     res.send(savedRespondant);
   });
 });
@@ -192,12 +210,18 @@ router.delete('/all', authenticate, function(req, res, next) {
  *
  * @apiSuccess {Object[]} respondant deleted respondant
  */
-router.delete('/', authenticate, function(req, res, next) {
+router.delete('/:id', authenticate, function(req, res, next) {
 
-  Respondant.findByIdAndRemove(req.query.id).exec(function(err, respondantRemoved) {
+  Respondant.findById(req.params.id).deleteOne().exec(function(err, removedRespondant) {
+    if (!removedRespondant) {
+      res.status(404).send("Respondant with ID " + req.params.id + " not found.");
+    } else {
+      res.sendStatus(204);
+    }
+    
     if (err) {
       return next(err);
     }
-    res.send(respondantRemoved);
+      
   });
 });

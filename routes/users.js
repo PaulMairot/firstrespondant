@@ -2,7 +2,6 @@ import express from "express";
 import User from "../models/user.js";
 import { authenticate } from "./auth.js";
 import Intervention from "../models/intervention.js";
-import { broadcastMessage } from '../ws.js'
 
 const router = express.Router();
 
@@ -21,7 +20,6 @@ router.get("/", authenticate, function (req, res, next) {
     if (err) {
       return next(err);
     }
-    broadcastMessage({ hello: 'world' });
     
     res.send(users);
   });
