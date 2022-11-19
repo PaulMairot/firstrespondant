@@ -144,6 +144,9 @@ router.post('/', authenticate, function(req, res, next) {
       }
       
     ], function(err, results) {
+      if (err) {
+        return next(err);
+      }
       broadcastMessage({title: 'New respondant !', message: 'There are now ' + results[0].nbrInterventions + ' respondants.'});
     });
 
@@ -215,7 +218,7 @@ router.delete('/all', authenticate, function(req, res, next) {
  * 
  * @apiParam {Number} id Unique identifier of the respondant
  *
- * @apiSuccess {Object[]} respondant deleted respondant
+ * @apiSuccess (Success 204) RespondantDeleted Respondant deleted successfully.
  * 
  * @apiError (Error 404) RespondantNotFound The <code>id</code> of the respondant was not found.
  * 

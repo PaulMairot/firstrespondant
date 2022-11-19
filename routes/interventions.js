@@ -45,13 +45,6 @@ router.get("/", function (req, res, next) {
     });
 
   });
-
-  /* Intervention.find().populate("user").populate("respondant").exec(function(err, interventions) {
-    if (err) {
-      return next(err);
-    }
-    res.send(interventions);
-  }); */
 });
 
 
@@ -170,7 +163,7 @@ router.delete('/all', authenticate, function (req,res,next) {
  * 
  * @apiParam {Number} id Unique identifier of the intervention.
  *
- * @apiSuccess {Object[]} intervention Deleted intervention.
+ * @apiSuccess (Success 204) InterventionDeleted Intervention deleted successfully.
  * 
  * @apiError (Error 404) InterventionNotFound The <code>id</code> of the intervention was not found.
  * 
@@ -214,7 +207,7 @@ router.get('/:id/nearest', authenticate, function(req, res, next) {
     }
    }).find((error, results) => {
     if (error) console.log(error);
-    // Check radius of respondant
+
     let idClosestRespondant = "";
     let valueClosestRespondant = 5000;
     results.forEach(respondant => {

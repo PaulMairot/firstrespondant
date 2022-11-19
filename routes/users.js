@@ -158,8 +158,8 @@ router.put('/:id', authenticate, function(req, res, next) {
  * @apiGroup User
  * 
  * @apiParam {Number} id Unique identifier of the user
- *'
- * @apiSuccess {Object[]} user deleted user
+ *
+ * @apiSuccess (Success 204) UserDeleted User deleted successfully.
  * 
  * @apiError (Error 404) UserNotFound The <code>id</code> of the user was not found.
  * 

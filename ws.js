@@ -14,7 +14,6 @@ export function createWebSocketServer(httpServer) {
   // Handle new client connections.
   wss.on('connection', function (ws) {
     debug('New WebSocket client connected');
-    console.log("connected")
 
     // Keep track of clients.
     clients.push(ws);
@@ -46,8 +45,7 @@ export function broadcastMessage(message) {
   debug(
     `Broadcasting message to all connected clients: ${JSON.stringify(message)}`
   );
-  // You can easily iterate over the "clients" array to send a message to all
-  // connected clients.
+  
   clients.forEach(client => {
     client.send(JSON.stringify(message));
   })
@@ -55,6 +53,6 @@ export function broadcastMessage(message) {
 
 function onMessageReceived(ws, message) {
   debug(`Received WebSocket message: ${JSON.stringify(message)}`);
-  // Do something with message...
+  
   console.log(message);
 }
